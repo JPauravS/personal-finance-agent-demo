@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture — Agentic Personal Finance Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --bg-soft:#f7f8fa;
+    --border:#e4e7ec;
+    --border-strong:#d0d5dd;
+    --ink:#1a1f29;
+    --text:#3a4250;
+    --muted:#697586;
+    --accent:#2563a8;
+    --accent-soft:#eef4fb;
+    --code-bg:#f3f5f8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:"IBM Plex Sans",sans-serif; font-size:16px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:840px; margin:0 auto; padding:0 32px}
+
+  /* header */
+  header{padding:88px 0 40px; border-bottom:1px solid var(--border)}
+  .kicker{font-family:"IBM Plex Mono",monospace; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:16px}
+  h1{font-size:2.6rem; line-height:1.1; letter-spacing:-.02em; color:var(--ink); font-weight:600; margin-bottom:18px}
+  .lede{font-size:1.18rem; color:var(--muted); max-width:62ch; line-height:1.5}
+  .lede b{color:var(--ink); font-weight:600}
+  .facts{display:flex; flex-wrap:wrap; gap:8px; margin-top:28px}
+  .facts span{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--text); background:var(--bg-soft); border:1px solid var(--border); padding:6px 12px; border-radius:6px}
+  .facts b{color:var(--accent); font-weight:600}
+
+  /* sections */
+  section{padding:52px 0; border-bottom:1px solid var(--border)}
+  section:last-of-type{border-bottom:none}
+  h2{font-size:.85rem; font-family:"IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:28px; display:flex; align-items:center; gap:12px}
+  h2::before{content:""; width:22px; height:2px; background:var(--accent)}
+
+  /* diagram */
+  .diagram{display:flex; flex-direction:column; align-items:center; gap:0}
+  .node{background:var(--bg); border:1px solid var(--border-strong); border-radius:10px; padding:13px 22px; text-align:center; min-width:240px; box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  .node .t{font-weight:600; color:var(--ink); font-size:15px}
+  .node .s{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted); margin-top:3px}
+  .node.spine{border-color:var(--accent); background:var(--accent-soft); min-width:320px}
+  .node.spine .t{color:var(--accent)}
+  .node.soft{background:var(--bg-soft); border-style:dashed}
+  .arrow{width:1px; height:30px; background:var(--border-strong); position:relative}
+  .arrow::after{content:""; position:absolute; bottom:0; left:50%; transform:translate(-50%,1px) rotate(45deg); width:6px; height:6px; border-right:1px solid var(--border-strong); border-bottom:1px solid var(--border-strong)}
+  .arrow .lbl{position:absolute; left:12px; top:50%; transform:translateY(-50%); white-space:nowrap; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted)}
+  .fan{width:100%; max-width:640px}
+  .bus{position:relative; height:26px}
+  .bus i{position:absolute; background:var(--border-strong)}
+  .bus .v{top:0; left:50%; width:1px; height:13px; transform:translateX(-50%)}
+  .bus .h{top:13px; left:16.6%; right:16.6%; height:1px}
+  .bus .d{top:13px; width:1px; height:13px}
+  .bus .d1{left:16.6%}.bus .d2{left:50%;transform:translateX(-50%)}.bus .d3{right:16.6%}
+  .agents{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  .agent{border:1px solid var(--border-strong); border-radius:9px; padding:13px 10px; text-align:center; background:var(--bg); transition:border-color .15s, box-shadow .15s}
+  .agent:hover{border-color:var(--accent); box-shadow:0 2px 8px rgba(37,99,168,.1)}
+  .agent .an{font-weight:600; color:var(--ink); font-size:13.5px}
+  .agent .ad{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); margin-top:4px}
+  .merge{position:relative; height:26px}
+  .merge i{position:absolute; background:var(--border-strong)}
+  .merge .h{top:0; left:16.6%; right:16.6%; height:1px}
+  .merge .u{top:0; width:1px; height:13px}
+  .merge .u1{left:16.6%}.merge .u2{left:50%;transform:translateX(-50%)}.merge .u3{right:16.6%}
+  .merge .v{top:13px; left:50%; width:1px; height:13px; transform:translateX(-50%)}
+  .memrow{display:flex; align-items:center; gap:14px; margin-top:24px; padding:13px 18px; border:1px dashed var(--border-strong); border-radius:9px; background:var(--bg-soft)}
+  .memrow .mt{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--accent); white-space:nowrap}
+  .memrow .mx{font-size:13.5px; color:var(--muted)}
+
+  /* tables */
+  table{width:100%; border-collapse:collapse; font-size:14.5px}
+  th,td{text-align:left; padding:13px 16px; border-bottom:1px solid var(--border); vertical-align:top}
+  th{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); font-weight:600}
+  tbody tr:last-child td{border-bottom:none}
+  td:first-child{font-weight:600; color:var(--ink); white-space:nowrap; width:180px}
+  tr:hover td{background:var(--bg-soft)}
+  code{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--code-bg); padding:2px 6px; border-radius:4px; color:var(--accent)}
+
+  /* control flow */
+  ol.flow{list-style:none; counter-reset:s}
+  ol.flow li{counter-increment:s; position:relative; padding:0 0 22px 46px; font-size:15px}
+  ol.flow li::before{content:counter(s); position:absolute; left:0; top:0; width:28px; height:28px; border-radius:7px; background:var(--accent-soft); color:var(--accent); font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:13px; display:flex; align-items:center; justify-content:center}
+  ol.flow li::after{content:""; position:absolute; left:13.5px; top:30px; bottom:0; width:1px; background:var(--border)}
+  ol.flow li:last-child{padding-bottom:0}
+  ol.flow li:last-child::after{display:none}
+  ol.flow b{color:var(--ink)}
+
+  /* why cards */
+  .why{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .card{border:1px solid var(--border); border-radius:10px; padding:20px; background:var(--bg)}
+  .card h3{font-size:15px; color:var(--ink); font-weight:600; margin-bottom:7px}
+  .card p{font-size:14px; color:var(--muted); line-height:1.55}
+  .card.full{grid-column:1/-1}
+  .rejected{margin-top:16px; font-size:14px; color:var(--muted); padding:16px 18px; background:var(--bg-soft); border:1px solid var(--border); border-radius:9px}
+  .rejected b{color:var(--ink)}
+
+  .ext{display:grid; gap:14px}
+  .ext .row{display:grid; grid-template-columns:130px 1fr; gap:16px; padding:14px 0; border-bottom:1px solid var(--border)}
+  .ext .row:last-child{border-bottom:none}
+  .ext .row .h{font-weight:600; color:var(--ink)}
+  .ext .row .b{font-size:14px; color:var(--muted)}
+
+  section:last-of-type{padding-bottom:80px}
+
+  @media(max-width:680px){
+    h1{font-size:2rem}
+    td:first-child{width:auto}
+    table,thead,tbody,th,td,tr{display:block}
+    thead{display:none}
+    td{border-bottom:none; padding:4px 0}
+    tbody tr{padding:14px 0; border-bottom:1px solid var(--border)}
+    .why{grid-template-columns:1fr}
+    .agents{grid-template-columns:1fr; gap:10px}
+    .bus,.merge{display:none}
+    .node,.node.spine{min-width:0; width:100%}
+    .ext .row{grid-template-columns:1fr; gap:4px}
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="kicker">Agentic AI · Retail Banking</div>
+  <h1>System Architecture</h1>
+  <p class="lede">A personal finance advisor built on an <b>orchestrator + specialists</b> pattern. Mock-first and swap-ready — the same topology accepts a real LLM or LangGraph with no restructure.</p>
+  <div class="facts">
+    <span><b>4</b> agents</span>
+    <span><b>Star</b> topology</span>
+    <span><b>Typed</b> contracts</span>
+    <span>FastAPI + vanilla JS</span>
+  </div>
+</header>
+
+<section class="wrap">
+  <h2>Topology</h2>
+  <div class="diagram">
+    <div class="node"><div class="t">Web UI</div><div class="s">chat · HTML / JS</div></div>
+    <div class="arrow"><span class="lbl">POST /chat {message, session_id}</span></div>
+    <div class="node"><div class="t">FastAPI backend</div></div>
+    <div class="arrow"></div>
+    <div class="node spine"><div class="t">Planner — Orchestrator</div><div class="s">parse → plan → route → branch → merge</div></div>
+    <div class="fan">
+      <div class="bus"><i class="v"></i><i class="h"></i><i class="d d1"></i><i class="d d2"></i><i class="d d3"></i></div>
+      <div class="agents">
+        <div class="agent"><div class="an">Spending</div><div class="ad">anomaly &gt;20% MoM</div></div>
+        <div class="agent"><div class="an">Recommendation</div><div class="ad">profile-scaled ₹</div></div>
+        <div class="agent"><div class="an">Alerting</div><div class="ad">budget ≥90%</div></div>
+      </div>
+      <div class="merge"><i class="h"></i><i class="u u1"></i><i class="u u2"></i><i class="u u3"></i><i class="v"></i></div>
+    </div>
+    <div class="node"><div class="t">Tool layer — mock APIs</div><div class="s">get_transactions · get_categories · get_budgets · get_balance</div></div>
+    <div class="arrow"></div>
+    <div class="node soft"><div class="t">Mock data store</div><div class="s">JSON transactions</div></div>
+    <div class="memrow"><span class="mt">Memory (session)</span><span class="mx">Planner read/write — conversation history · result cache · user profile</span></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Components</h2>
+  <table>
+    <thead><tr><th>Component</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td>Planner</td><td>Spine. Classify intent → build plan → sequence specialists → branch on results → merge <code>FinalResponse</code>.</td></tr>
+      <tr><td>Spending Analysis</td><td>Categorize transactions, compute month-over-month trend, flag anomaly (&gt;20% MoM). The in-depth agent.</td></tr>
+      <tr><td>Recommendation</td><td>Target high categories, estimate ₹ saved. Aggressiveness scales to <code>profile.risk_pref</code>.</td></tr>
+      <tr><td>Alerting</td><td>Scan every category against budget. Flag breach / near-breach (≥90%).</td></tr>
+      <tr><td>Tool layer</td><td>Typed mock APIs. Agents never touch the store directly. Shaped like LLM function-calls.</td></tr>
+      <tr><td>Memory</td><td>Session history + result cache + user profile. In-memory.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="wrap">
+  <h2>Control flow</h2>
+  <ol class="flow">
+    <li>UI POSTs the message → FastAPI → Planner.</li>
+    <li>Planner classifies intent → candidate plan.</li>
+    <li>Spending runs first — <code>run(query, profile)</code>.</li>
+    <li>Planner <b>branches on the result</b>: Alerting runs only on anomaly / near-breach; Recommendation is skipped if nothing is reducible.</li>
+    <li>Specialists return typed contracts → Planner merges → <code>FinalResponse</code>.</li>
+    <li>Planner saves the turn to memory. UI renders cards + agent trace.</li>
+  </ol>
+</section>
+
+<section class="wrap">
+  <h2>Routing</h2>
+  <table>
+    <thead><tr><th>Intent</th><th>Execution plan</th></tr></thead>
+    <tbody>
+      <tr><td>IMPROVE_SAVINGS</td><td>spending → recommend → alert</td></tr>
+      <tr><td>SPENDING_SUMMARY</td><td>spending</td></tr>
+      <tr><td>BUDGET_STATUS</td><td>alert (+ spending for context)</td></tr>
+      <tr><td>WHY_OVERSPENT</td><td>spending → alert → recommend</td></tr>
+      <tr><td>GENERAL_ADVICE</td><td>spending → recommend</td></tr>
+      <tr><td>GREETING / UNKNOWN</td><td>direct reply, no agents</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:16px; color:var(--muted); font-size:14px">First-match-wins keyword routing. The same interface accepts an LLM classifier later.</p>
+</section>
+
+<section class="wrap">
+  <h2>Why this architecture</h2>
+  <div class="why">
+    <div class="card"><h3>Orchestrator owns control flow</h3><p>Specialists never call each other → acyclic, debuggable star topology.</p></div>
+    <div class="card"><h3>Typed contracts</h3><p>Dataclasses, not free text → testable and predictable.</p></div>
+    <div class="card"><h3>Mock-first, swap-ready</h3><p>Rule-based <code>reason()</code> now; maps 1:1 to LangGraph nodes/edges. A real model drops in with zero restructure.</p></div>
+    <div class="card"><h3>Data-dependent autonomy</h3><p>Executed steps depend on the agent's own output → reasoned, not a fixed pipeline.</p></div>
+    <div class="card full"><h3>One file per agent</h3><p>Parallel build seams; fully modular.</p></div>
+  </div>
+  <p class="rejected"><b>Rejected alternatives:</b> monolith (fails the multi-agent requirement, no visible orchestration) · peer-to-peer agents (cycles, coordination tax) · real LLM now (no key, 1-hour budget).</p>
+</section>
+
+<section class="wrap">
+  <h2>Extensibility</h2>
+  <div class="ext">
+    <div class="row"><div class="h">LLM</div><div class="b">Replace <code>reason()</code> / <code>classify_intent()</code> with a Claude tool-calling loop.</div></div>
+    <div class="row"><div class="h">LangGraph</div><div class="b">Planner = graph · agents = nodes · routing table = conditional edges.</div></div>
+    <div class="row"><div class="h">Persistence</div><div class="b">Swap in-memory state + JSON store for a database.</div></div>
+  </div>
+</section>
+
+</body>
+</html>
