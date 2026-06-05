@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personal Finance Advisor</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Personal Finance Advisor</h1>
+    <span class="sub">Aarav · ₹ · balanced</span>
+  </header>
+
+  <main class="layout">
+    <!-- Left: chat -->
+    <section class="chat-pane">
+      <div id="chat" class="chat" aria-live="polite"></div>
+      <form id="chat-form" class="composer" autocomplete="off">
+        <input id="msg" class="msg-input" type="text"
+               placeholder="Ask about your spending, savings, budgets…" />
+        <button type="submit" class="send-btn">Send</button>
+      </form>
+    </section>
+
+    <!-- Right: insight/recs/alerts + agent trace -->
+    <aside class="side">
+      <article class="card card-insights">
+        <h2>Insights</h2>
+        <div id="card-insights" class="card-body muted">No insights yet.</div>
+      </article>
+      <article class="card card-recs">
+        <h2>Recommendations</h2>
+        <div id="card-recs" class="card-body muted">No recommendations yet.</div>
+      </article>
+      <article class="card card-alerts">
+        <h2>Alerts</h2>
+        <div id="card-alerts" class="card-body muted">No alerts.</div>
+      </article>
+
+      <article class="card card-trace">
+        <button id="trace-toggle" class="trace-toggle" type="button"
+                aria-expanded="true">Agent trace ▾</button>
+        <ol id="trace" class="trace"></ol>
+      </article>
+    </aside>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
