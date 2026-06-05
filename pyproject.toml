@@ -1,0 +1,22 @@
+[project]
+name = "personal-finance-advisor-worker"
+version = "0.1.0"
+description = "Cloudflare Python Worker deployment for the Personal Finance Advisor"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "pydantic",
+]
+
+[dependency-groups]
+# Worker tooling (pywrangler) + local-only dev/test deps. None of these are
+# vendored into the Worker bundle — only [project].dependencies are. uvicorn is
+# the LOCAL dev server (app/main.py); the Workers runtime replaces it at the edge.
+dev = [
+    "workers-py",
+    "workers-runtime-sdk",
+    "uvicorn[standard]",
+    "httpx",
+    "pytest",
+]

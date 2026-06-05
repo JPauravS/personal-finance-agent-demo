@@ -6,6 +6,10 @@ __pycache__/
 .venv/
 venv/
 
+# Node / Cloudflare Workers tooling
+node_modules/
+.wrangler/
+
 # Tooling (unrelated to this project)
 .wolf/
 .wrangler/
