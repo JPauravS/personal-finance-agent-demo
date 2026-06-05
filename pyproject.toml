@@ -4,18 +4,29 @@ version = "0.1.0"
 description = "Cloudflare Python Worker deployment for the Personal Finance Advisor"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "fastapi",
-    "pydantic",
-]
+# The edge Worker (worker_main.py) uses the NATIVE Workers handler, not FastAPI —
+# the agent pipeline is pure stdlib, so the Worker vendors ZERO runtime packages
+# (keeps the bundle under the free-plan 3 MiB limit). fastapi/uvicorn/pydantic are
+# LOCAL-only (app/main.py + tests) and live in the dev group below, so pywrangler
+# does not vendor them into the Worker.
+dependencies = []
 
 [dependency-groups]
-# Worker tooling (pywrangler) + local-only dev/test deps. None of these are
-# vendored into the Worker bundle — only [project].dependencies are. uvicorn is
-# the LOCAL dev server (app/main.py); the Workers runtime replaces it at the edge.
+# `dev` is installed by default by `uv run` / `uv sync`. pywrangler runs through
+# `uv run`, and the bundler sweeps the active venv into the Worker — so `dev` must
+# contain ONLY the build tooling, or local-only packages would bloat the edge
+# bundle past the 3 MiB free-plan limit.
 dev = [
     "workers-py",
     "workers-runtime-sdk",
+]
+
+# Local-only (app/main.py FastAPI server + the test suite). NOT installed by
+# `uv run pywrangler`, so these never reach the Worker bundle. Opt in with:
+#   uv sync --group local      (or just use system Python: py -m pytest)
+local = [
+    "fastapi",
+    "pydantic",
     "uvicorn[standard]",
     "httpx",
     "pytest",

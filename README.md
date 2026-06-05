@@ -12,20 +12,22 @@ follow-up questions without recomputation. Star topology, rule-based reasoning,
 ## Quickstart (local)
 
 ```bash
-uv sync                                # installs runtime + dev deps (uv-managed venv)
-uv run uvicorn app.main:app --reload   # serves the API + static web UI
+pip install fastapi "uvicorn[standard]" httpx pytest
+uvicorn app.main:app --reload      # serves the API + static web UI
 # open http://localhost:8000
 ```
 
-> No `uv`? `pip install fastapi "uvicorn[standard]" httpx pytest`, then
-> `uvicorn app.main:app --reload`. (`requirements.txt` was removed because
-> Cloudflare's `pywrangler` requires `pyproject.toml` as the single dependency
-> source — see **Deploy to Cloudflare** below.)
+> Prefer `uv`? The FastAPI/uvicorn/test deps live in the **`local`** dependency
+> group (kept out of the default env so they don't bloat the Cloudflare Worker —
+> see **Deploy to Cloudflare** below). Use them with:
+> `uv sync --group local` then `uv run --group local uvicorn app.main:app --reload`.
+> (`requirements.txt` was removed because `pywrangler` requires `pyproject.toml`
+> as the single dependency source.)
 
 Run the test suite (includes the end-to-end demo-scenario acceptance tests):
 
 ```bash
-uv run pytest -q     # or: py -m pytest -q
+py -m pytest -q      # or: uv run --group local pytest -q
 ```
 
 CLI fallback demo — replays all four HLD §11 scenarios through the full pipeline
@@ -44,12 +46,16 @@ py -m app.smoke
 
 ## Deploy to Cloudflare (Python Workers)
 
-The same FastAPI pipeline runs at the edge on Cloudflare Python Workers (Pyodide).
-The Worker entry is [`worker_main.py`](worker_main.py) (reuses the `app` package
-verbatim, swaps the HTTP boundary); the vanilla web UI is served from
-[`worker-assets/`](worker-assets/) via the Workers static-assets binding;
+**Live:** https://personal-finance-advisor.joshipaurav.workers.dev
+
+The same agent pipeline runs at the edge on Cloudflare Python Workers (Pyodide).
+The Worker entry [`worker_main.py`](worker_main.py) reuses the `app` package
+verbatim but swaps the HTTP boundary for the **native Workers handler** (no
+FastAPI/pydantic — the pipeline is pure stdlib, which keeps the bundle under the
+free-plan 3 MiB limit). The vanilla web UI is served from
+[`worker-assets/`](worker-assets/) via the static-assets binding;
 `wrangler.jsonc` wires it together. Requires `uv` (the toolchain installs its own
-Python 3.12).
+Python 3.12 + Pyodide).
 
 ```bash
 npm run dev        # uv run pywrangler dev   — local edge runtime at 127.0.0.1:8787

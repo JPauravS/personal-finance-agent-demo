@@ -1,45 +1,46 @@
 """Cloudflare Python Worker entry — Personal Finance Advisor (HLD §5, edge variant).
 
-Mirrors app/main.py's POST /api/chat boundary, but adapted for Cloudflare Workers:
-  - No uvicorn (the Workers runtime is the server).
-  - No StaticFiles / FileResponse: the vanilla web/ UI is served by the Workers
-    static-assets ASSETS binding (see wrangler.jsonc `assets`). This Worker owns
-    only /api/* (forced via `run_worker_first`); everything else is an asset.
+The local app exposes the pipeline via FastAPI (app/main.py). At the edge we use
+the *native* Workers handler instead of FastAPI/pydantic — the orchestrator and all
+specialist agents are pure-stdlib Python, so dropping the web framework keeps the
+Worker bundle tiny (well under the free-plan size limit). Only the HTTP boundary
+differs; the agentic pipeline (app package) is reused verbatim.
 
-The agent pipeline (orchestrator + specialist agents + tools + memory) is reused
-verbatim from the app package — only the HTTP boundary differs from app/main.py.
+Routing:
+  POST /api/chat  → Planner.handle(message, session_id) → asdict → JSON
+  everything else → delegated to the static-assets binding (the web/ UI)
+
+`run_worker_first: ["/api/*"]` (wrangler.jsonc) guarantees /api/* reaches this
+Worker; all other paths are served directly from worker-assets/ as static assets.
 """
+import json
 from dataclasses import asdict
+from urllib.parse import urlparse
 
-from fastapi import FastAPI
-from pydantic import BaseModel
-from workers import WorkerEntrypoint
+from workers import WorkerEntrypoint, Response
 
 from app.memory.store import SessionStore
 from app.orchestrator import Planner
 
-app = FastAPI(title="Personal Finance Advisor")
-
 # Single process-wide store + planner; session isolation is by session_id.
+# (In-memory per warm isolate — see HLD §7; swap for a Durable Object / KV later.)
 _store = SessionStore()
 _planner = Planner(_store)
 
 
-class ChatIn(BaseModel):
-    message: str
-    session_id: str = "default"
-
-
-@app.post("/api/chat")
-async def chat(body: ChatIn):
-    final = _planner.handle(body.message, body.session_id)
-    # asdict recurses nested dataclasses into JSON-serializable dicts.
-    return asdict(final)
-
-
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
-        # ASGI shim: hand the FastAPI app the incoming request.
-        import asgi
-
-        return await asgi.fetch(app, request.js_object, self.env)
+        path = urlparse(request.url).path
+        if request.method == "POST" and path == "/api/chat":
+            raw = await request.text()
+            body = json.loads(raw) if raw else {}
+            message = body.get("message", "")
+            session_id = body.get("session_id", "default")
+            final = _planner.handle(message, session_id)
+            # asdict recurses nested dataclasses into JSON-serializable dicts.
+            return Response(
+                json.dumps(asdict(final)),
+                headers={"Content-Type": "application/json"},
+            )
+        # Non-API request: serve the static web UI from the ASSETS binding.
+        return await self.env.ASSETS.fetch(request)
