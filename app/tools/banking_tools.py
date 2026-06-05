@@ -21,7 +21,13 @@ _BALANCE = 45000.0
 
 
 def _load() -> list[Transaction]:
-    rows = json.loads(_DATA_PATH.read_text(encoding="utf-8"))
+    # Prefer the canonical JSON file (used locally + by tests). At the edge
+    # (Cloudflare Python Workers) arbitrary data files are NOT bundled into the
+    # Pyodide FS, so fall back to the embedded Python module, which IS bundled.
+    try:
+        rows = json.loads(_DATA_PATH.read_text(encoding="utf-8"))
+    except (FileNotFoundError, OSError):
+        from app.data.transactions_data import TRANSACTIONS as rows
     return [Transaction(**r) for r in rows]
 
 

@@ -31,3 +31,24 @@ def test_pinned_sums():
 def test_has_credit_row():
     rows = json.loads(DATA.read_text(encoding="utf-8"))
     assert any(r["type"] == "credit" for r in rows)
+
+
+def test_embedded_data_matches_json():
+    # The Cloudflare-edge fallback (app/data/transactions_data.py) must never
+    # drift from the canonical JSON. Regenerate the .py if this fails.
+    from app.data.transactions_data import TRANSACTIONS
+    assert TRANSACTIONS == json.loads(DATA.read_text(encoding="utf-8"))
+
+
+def test_load_falls_back_to_embedded_when_file_missing(monkeypatch):
+    # Simulate the edge: the JSON file is unreadable → _load() uses the embedded
+    # module and still returns the full pinned dataset.
+    from pathlib import Path as _P
+    from app.tools import banking_tools
+    monkeypatch.setattr(banking_tools, "_DATA_PATH", _P("does/not/exist.json"))
+    rows = banking_tools._load()
+    assert len(rows) == 24
+    may_food = sum(r.amount for r in rows
+                   if r.category == "food" and r.date.startswith("2026-05")
+                   and r.type == "debit")
+    assert may_food == 12000.0
