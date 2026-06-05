@@ -9,6 +9,14 @@ alerts + a human-readable `plan_trace`), and per-session memory enables
 follow-up questions without recomputation. Star topology, rule-based reasoning,
 **zero LLM dependencies** — every agentic step is visible in the trace.
 
+## Live
+
+| | |
+|--|--|
+| **App** (chat UI + `/api/chat`) | https://personal-finance-advisor.joshipaurav.workers.dev |
+| **Architecture** (interactive doc-site) | https://pf-advisor-arch.pages.dev |
+| **Agentic Workflow** (progressive L1→L3 walkthrough) | https://pf-advisor-arch.pages.dev/workflow |
+
 ## Quickstart (local)
 
 ```bash
@@ -73,6 +81,13 @@ cp web/style.css  worker-assets/static/style.css
 
 ## Architecture & Design
 
+- **Architecture (structure — *what it is*):** [`ARCHITECTURE.md`](ARCHITECTURE.md)
+  · live: https://pf-advisor-arch.pages.dev
+- **Agentic Workflow (runtime — *what it does*):** [`WORKFLOW.md`](WORKFLOW.md) —
+  L1 intuition → L2 mechanism → L3 internals, traces captured from the running
+  orchestrator · live: https://pf-advisor-arch.pages.dev/workflow
 - **High-level design:** [`HLD.md`](HLD.md)
 - **Implementation plan (this build):** [`LLD/`](LLD/) — `LLD_INDEX.md` is the
   entry point (frozen contracts, gate protocol, task map).
+- **Build history (the 4 sessions that made this):** [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md)
+  · dev quick-reference: [`CLAUDE.md`](CLAUDE.md)
