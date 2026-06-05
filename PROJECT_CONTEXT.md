@@ -18,7 +18,7 @@ Docs: [`README.md`](README.md) · [`HLD.md`](HLD.md) · [`ARCHITECTURE.md`](ARCH
 
 ## The project arc in one read
 
-The project was built across **four Claude Code sessions on 2026-06-05** (windows
+The project was built across **three Claude Code sessions on 2026-06-05** (windows
 overlap — design, doc-site, and build progressed in parallel). The arc:
 
 1. **Design** (`a3a2d9f2`) — turned a spoken brief into a reviewed **HLD**, a
@@ -27,7 +27,6 @@ overlap — design, doc-site, and build progressed in parallel). The arc:
    rendered them to an HTML doc-site on **Cloudflare Pages**.
 3. **Build & ship** (`4148192e`) — executed the LLD via subagent-driven
    development (67 tests), then deployed the app to **Cloudflare Workers**.
-4. **Explain** (`23c58ceb`, current) — interview-style walkthrough + this file.
 
 Reading order to reconstruct everything: HLD → LLD/ → ARCHITECTURE → WORKFLOW →
 the session summaries below.
@@ -41,7 +40,6 @@ the session summaries below.
 | 1 | `a3a2d9f2` | `CC/` (parent) | 08:25 → 09:40 | Design | HLD, LLD/, parallel plan, NEW_SESSION_PROMPT |
 | 2 | `de99ee7e` | `personal-finance-agent/` | 09:19 → 10:22 | Docs & doc-site | ARCHITECTURE.md, WORKFLOW.md, Pages site |
 | 3 | `4148192e` | `personal-finance-agent/` | 09:39 → 10:43 | Build & ship | `app/`, `web/`, 67 tests, Workers deploy |
-| 4 | `23c58ceb` | `personal-finance-agent/` | 10:22 → current | Explain | interview write-up, this file |
 
 ---
 
@@ -180,20 +178,6 @@ claude --resume 4148192e-a3ed-4383-9551-d99a53d8c59b
 - **Live + verified:** **personal-finance-advisor.joshipaurav.workers.dev** — same
   deterministic demo as local. Cloudflare Python Workers gotchas persisted to memory.
 
-## 4 — Explain (current)   `23c58ceb`
-
-This active session. Resume normally in the live terminal.
-
-```bash
-cd C:\Users\paura\OneDrive\Documents\CC\personal-finance-agent
-claude --resume 23c58ceb-7cdc-4b8d-b111-580a337e384a
-```
-
-- **"How did you make this?"** → interview-style walkthrough (problem framing,
-  orchestrator choice, data-dependent autonomy, mock-first swap-ready tradeoff,
-  testing, deployment, honest nuances).
-- **This `PROJECT_CONTEXT.md`** — full-context session map.
-
 ---
 
 ## Quick resume reference
@@ -203,9 +187,8 @@ claude --resume 23c58ceb-7cdc-4b8d-b111-580a337e384a
 cd C:\Users\paura\OneDrive\Documents\CC
 claude --resume a3a2d9f2-b9ac-4382-92ac-a449429022fd
 
-# Sessions 2–4 — docs / build / current  (from project folder)
+# Sessions 2–3 — docs / build  (from project folder)
 cd C:\Users\paura\OneDrive\Documents\CC\personal-finance-agent
 claude --resume de99ee7e-413f-41d4-8e15-a798a6c2c6b9   # docs & Pages doc-site
 claude --resume 4148192e-a3ed-4383-9551-d99a53d8c59b   # build & Workers deploy
-claude --resume 23c58ceb-7cdc-4b8d-b111-580a337e384a   # this session
 ```

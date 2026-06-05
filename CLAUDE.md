@@ -83,7 +83,7 @@ doc-site https://pf-advisor-arch.pages.dev (`/workflow`)
 | [`LLD/`](LLD/) | task-by-task build plan; `LLD_INDEX.md` = frozen contracts + gate protocol |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | structure — *what the system is* |
 | [`WORKFLOW.md`](WORKFLOW.md) | runtime — *what it does*; L1→L2→L3 progressive depth |
-| [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md) | **the 4 build sessions + resume commands** |
+| [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md) | **the 3 build sessions + resume commands** |
 | [`NEW_SESSION_PROMPT.md`](NEW_SESSION_PROMPT.md) | paste-ready prompt that drove the build |
 
 ## Extensibility
