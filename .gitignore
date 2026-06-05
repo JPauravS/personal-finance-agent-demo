@@ -9,6 +9,8 @@ venv/
 # Node / Cloudflare Workers tooling
 node_modules/
 .wrangler/
+.venv-workers/
+python_modules/
 
 # Tooling (unrelated to this project)
 .wolf/
