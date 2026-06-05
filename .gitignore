@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Tooling (unrelated to this project)
+.wolf/
+.wrangler/
+site-dist/
